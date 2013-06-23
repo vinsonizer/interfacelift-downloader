@@ -80,7 +80,7 @@ object InterfaceliftDownloader {
 
   def main(args: Array[String]) = {
     val d = new InterfaceliftDownloader
-    d.getImages("C:\\Users\\jv\\Pictures\\InterfaceLift","http://interfacelift.com/wallpaper/downloads/rating/widescreen/2560x1440/")
+    d.getImages("/home/jason/Pictures/InterfaceLift","http://interfacelift.com/wallpaper/downloads/rating/widescreen/1440x900/")
   }
 
 }

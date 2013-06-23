@@ -1,4 +1,4 @@
-name := "AIS Package Analyzer"
+name := "Interface Lift Image Downloader"
 
 version := "1.0.0"
 
