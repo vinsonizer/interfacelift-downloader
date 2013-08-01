@@ -7,4 +7,4 @@ You may want to change your file path in the main method of:
 
 To run on cygwin:
 
- - sbt run && for i in `cat files.txt`; do cygstart $(cygpath -u $i); done
+ - `sbt run && for i in ``cat files.txt``; do cygstart $(cygpath -u $i); done`
