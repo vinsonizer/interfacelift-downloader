@@ -83,9 +83,10 @@ object InterfaceliftDownloader {
     props.load(new java.io.FileInputStream("src/main/resources/downloader.properties"))
     val pages = Integer.parseInt(props.get("numPages").toString)
     val directory = props.get("directory").toString
+    val resolution = props.get("resolution").toString
     val d = new InterfaceliftDownloader
     //d.getImages("/home/jason/Pictures/InterfaceLift","http://interfacelift.com/wallpaper/downloads/rating/widescreen/1440x900/")
-    d.getImages(directory, pages, "http://interfacelift.com/wallpaper/downloads/rating/widescreen/1440x900/")
+    d.getImages(directory, pages, "http://interfacelift.com/wallpaper/downloads/rating/widescreen/" + resolution + "/")
 
   }
 
