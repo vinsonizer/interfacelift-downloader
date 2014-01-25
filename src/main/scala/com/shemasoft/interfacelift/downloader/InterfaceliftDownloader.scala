@@ -10,9 +10,9 @@ class InterfaceliftDownloader {
   
   val parser = new InterfaceliftHtmlParser
   
-  def getImages(targetFolder: String, baseUrl: String) = {
+  def getImages(targetFolder: String, pageNums: Integer, baseUrl: String) = {
     val xml = getUrlContent(baseUrl)
-    val pageNums = getPageNums(xml)
+    //val pageNums = getPageNums(xml)
     val imageUrls = Range(1, pageNums+1, 1).map(idx => {getImageUrls(getUrlContent(baseUrl + "index" + idx + ".html"))}).flatten
     val imagesProcessed = imageUrls.filter(_.endsWith(".jpg")).filter(_.startsWith("/wallpaper")).distinct.map(downloadImage(_,
       targetFolder)).filter(_.length > 0)
@@ -79,8 +79,14 @@ class InterfaceliftDownloader {
 object InterfaceliftDownloader {
 
   def main(args: Array[String]) = {
+    val props = new java.util.Properties
+    props.load(new java.io.FileInputStream("src/main/resources/downloader.properties"))
+    val pages = Integer.parseInt(props.get("numPages").toString)
+    val directory = props.get("directory").toString
     val d = new InterfaceliftDownloader
-    d.getImages("/home/jason/Pictures/InterfaceLift","http://interfacelift.com/wallpaper/downloads/rating/widescreen/1440x900/")
+    //d.getImages("/home/jason/Pictures/InterfaceLift","http://interfacelift.com/wallpaper/downloads/rating/widescreen/1440x900/")
+    d.getImages(directory, pages, "http://interfacelift.com/wallpaper/downloads/rating/widescreen/1440x900/")
+
   }
 
 }
