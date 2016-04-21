@@ -20,13 +20,17 @@ class InterfaceliftDownloader {
     props
   }
 
-  val configProperties = readProperties()
-  
+  val config = readProperties()
+
+  def getProperty(key: String) = {
+    config.getProperty(key)
+  }
+
   def downLoadImages() = {
     trimOld()
-    val targetFolder = configProperties.getProperty("targetFolder")
-    val baseUrl = configProperties.getProperty("baseUrl")
-    val numberOfPages = configProperties.getProperty("numPages").toInt
+    val targetFolder = getProperty("targetFolder")
+    val baseUrl = getProperty("baseUrl")
+    val numberOfPages = getProperty("numPages").toInt
     println("Downloading from " + baseUrl + " to " + targetFolder)
     val imageUrls = Range(1, numberOfPages+1, 1).flatMap(idx => {getImageUrls(getUrlContent(baseUrl + "index" + idx + ".html"))})
 
@@ -96,8 +100,8 @@ class InterfaceliftDownloader {
   }
 
   def trimOld() = {
-    val directory = configProperties.getProperty("targetFolder")
-    val amount = configProperties.getProperty("trimFactor").toInt
+    val directory = getProperty("targetFolder")
+    val amount = getProperty("trimFactor").toInt
     val imgDirFiles = new File(directory).listFiles()
     util.Arrays.sort(imgDirFiles, new Comparator[File]() {
       override def compare(o1: File, o2: File): Int = {
