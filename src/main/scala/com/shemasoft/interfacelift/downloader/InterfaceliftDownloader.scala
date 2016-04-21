@@ -12,27 +12,13 @@ import scala.io.Source
 
 class InterfaceliftDownloader {
 
+  import Config._
+
   val parser = new InterfaceliftHtmlParser
 
-  def readProperties() : Properties = {
-    val props = new Properties()
-    props.load(Source.fromFile("src/main/resources/downloader.properties").reader())
-    props
-  }
-
-  val config = readProperties()
-
-  def getProperty(key: String) = {
-    config.getProperty(key)
-  }
-
-  def downLoadImages() = {
+  def downloadImages() = {
     trimOld()
-    val targetFolder = getProperty("targetFolder")
-    val baseUrl = getProperty("baseUrl")
-    val numberOfPages = getProperty("numPages").toInt
-    println("Downloading from " + baseUrl + " to " + targetFolder)
-    val imageUrls = Range(1, numberOfPages+1, 1).flatMap(idx => {getImageUrls(getUrlContent(baseUrl + "index" + idx + ".html"))})
+    val imageUrls = getImageUrlList
 
     val imagesProcessed = imageUrls
       .filter(_.endsWith(".jpg"))
@@ -42,6 +28,11 @@ class InterfaceliftDownloader {
 
     writeCompletionFile(targetFolder, imagesProcessed)
     println(imagesProcessed.size + " of " + imagesProcessed.size + " downloaded")
+  }
+
+  def getImageUrlList = {
+    println("Downloading from " + baseUrl + " to " + targetFolder)
+    Range(1, numberOfPages+1, 1).flatMap(idx => {getImageUrls(getUrlContent(baseUrl + "index" + idx + ".html"))})
   }
 
   def writeCompletionFile(targetFolder: String, files: Seq[String]) = {
@@ -100,16 +91,33 @@ class InterfaceliftDownloader {
   }
 
   def trimOld() = {
-    val directory = getProperty("targetFolder")
-    val amount = getProperty("trimFactor").toInt
-    val imgDirFiles = new File(directory).listFiles()
+    val imgDirFiles = new File(targetFolder).listFiles()
     util.Arrays.sort(imgDirFiles, new Comparator[File]() {
       override def compare(o1: File, o2: File): Int = {
         o1.lastModified().compareTo(o2.lastModified())
       }
     })
-    imgDirFiles.take(amount).foreach(_.delete())
+    imgDirFiles.take(trimFactor).foreach(_.delete())
   }
+
+}
+
+object Config {
+
+  lazy val config = {
+    val props = new Properties()
+    props.load(Source.fromFile("src/main/resources/downloader.properties").reader())
+    props
+  }
+
+  def getProp(key: String) = {
+    config.getProperty(key)
+  }
+
+  lazy val baseUrl       = getProp("baseUrl")
+  lazy val trimFactor    = getProp("trimFactor").toInt
+  lazy val targetFolder  = getProp("targetFolder")
+  lazy val numberOfPages = getProp("numPages").toInt
 
 }
 
@@ -117,7 +125,7 @@ object InterfaceliftDownloader {
 
   def main(args: Array[String]) = {
     val d = new InterfaceliftDownloader
-    d.downLoadImages()
+    d.downloadImages()
   }
 
 }
