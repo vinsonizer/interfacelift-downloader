@@ -1,6 +1,6 @@
 package com.shemasoft.interfacelift.downloader
 
-import java.io.{BufferedOutputStream, File, FileOutputStream, FileWriter, InputStream}
+import java.io.{BufferedOutputStream, File, FileOutputStream, InputStream}
 import java.net.{URL, URLConnection}
 import java.util
 import java.util.{Comparator, Properties}
@@ -10,11 +10,18 @@ import org.xml.sax.InputSource
 
 import scala.io.Source
 
-class InterfaceliftDownloader {
+/**
+  * @author jv
+  *
+  * Basic class which will connect to http://interfacelift.com and download html
+  * sources for a configured number of pages.  It will then parse the html, extract
+  * the downloadable image urls, and download the images to a specified location
+  */
+class InterfaceLiftDownloader {
 
   import Config._
 
-  val parser = new InterfaceliftHtmlParser
+  val parser = new InterfaceLiftHtmlParser
 
   def downloadImages() = {
     trimOld()
@@ -26,7 +33,6 @@ class InterfaceliftDownloader {
       .distinct.map(downloadImage(_, targetFolder))
       .filter(_.length > 0)
 
-    writeCompletionFile(targetFolder, imagesProcessed)
     println(imagesProcessed.size + " of " + imagesProcessed.size + " downloaded")
   }
 
@@ -35,12 +41,6 @@ class InterfaceliftDownloader {
     Range(1, numberOfPages+1, 1).flatMap(idx => {getImageUrls(getUrlContent(baseUrl + "index" + idx + ".html"))})
   }
 
-  def writeCompletionFile(targetFolder: String, files: Seq[String]) = {
-    val output = new FileWriter("files.txt", false)
-    files.foreach(x => { output.write(targetFolder + File.separatorChar + x + "\n") })
-    output.flush()
-    output.close()
-  }
   
   def downloadImage(imgUrl: String, targetFolder: String) = {
     println("Downloading from " + imgUrl + " to " + targetFolder)
@@ -102,6 +102,11 @@ class InterfaceliftDownloader {
 
 }
 
+/**
+  * @author jv
+  *
+  * Basic Configuration option class with convenience methods to get config values
+  */
 object Config {
 
   lazy val config = {
@@ -121,10 +126,16 @@ object Config {
 
 }
 
-object InterfaceliftDownloader {
+
+/**
+  * @author jv
+  *
+  * Simple "driver" class for executing the business logic.
+  */
+object InterfaceLiftDownloader {
 
   def main(args: Array[String]) = {
-    val d = new InterfaceliftDownloader
+    val d = new InterfaceLiftDownloader
     d.downloadImages()
   }
 
